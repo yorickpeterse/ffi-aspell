@@ -26,7 +26,7 @@ module FFI
       [:pointer, :string],
       :string
 
-    attach_function 'config_get_default',
+    attach_function 'config_retrieve_default',
       'aspell_config_get_default',
       [:pointer, :string],
       :string
