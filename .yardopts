@@ -1,0 +1,9 @@
+./lib/ffi/**/*.rb
+-m markdown
+-M redcarpet
+-o ./doc
+-r ./README.md
+--private
+--protected
+-
+LICENSE
