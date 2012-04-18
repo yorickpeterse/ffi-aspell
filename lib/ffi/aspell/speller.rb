@@ -4,9 +4,20 @@ module FFI
     # The Speller class is used for spell checking individual words as well as
     # generating a list of suggestions.
     #
+    # TODO: currently this class creates a new speller object every time
+    # {FFI::Aspell::Speller#correct?} and similar methods are called. I'm not
+    # entirely sure if this is needed, if not it should be modified.
+    #
     # @since 13-04-2012
     #
     class Speller
+      ##
+      # Array containing the possible suggestion modes to use.
+      #
+      # @since 18-04-2012
+      #
+      SUGGESTION_MODES = ['ultra', 'fast', 'normal', 'bad-spellers']
+
       ##
       # Creates a new instance of the class, sets the language as well as the
       # options specified in the `options` hash.
@@ -54,9 +65,18 @@ module FFI
       #
       def suggestions(word)
         speller     = Aspell.speller_new(@config)
-        suggestions = Aspell.speller_suggest(speller, word, word.length)
+        list        = Aspell.speller_suggest(speller, word, word.length)
+        suggestions = []
+        elements    = Aspell.word_list_elements(list)
 
+        while word = Aspell.string_enumeration_next(elements)
+          suggestions << word
+        end
+
+        Aspell.string_enumeration_delete(elements)
         Aspell.speller_delete(speller)
+
+        return suggestions
       end
 
       ##
@@ -86,7 +106,7 @@ module FFI
       # @param [#to_s] key The configuration key to set.
       # @param [#to_s] value The value of the configuration key.
       # @raise [FFI::Aspell::ConfigError] Raised when the configuration value
-      #  could not be set.
+      #  could not be set or when an incorrect suggestion mode was given.
       #
       def set(key, value)
         unless key.respond_to?(:to_s)
@@ -95,6 +115,10 @@ module FFI
 
         unless value.respond_to?(:to_s)
           raise(TypeError, 'Configuration values should respond to #to_s()')
+        end
+
+        if key == 'sug-mode' and !SUGGESTION_MODES.include?(value)
+          raise(ConfigError, "The suggestion mode #{value} is invalid")
         end
 
         unless Aspell.config_replace(@config, key.to_s, value.to_s)

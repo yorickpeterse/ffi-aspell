@@ -64,10 +64,25 @@ module FFI
       [:pointer, :string, :int],
       :bool
 
+    # Functions for dealing with suggestions.
     attach_function 'speller_suggest',
       'aspell_speller_suggest',
       [:pointer, :string, :int],
       :pointer
 
+    attach_function 'word_list_elements',
+      'aspell_word_list_elements',
+      [:pointer],
+      :pointer
+
+    attach_function 'string_enumeration_delete',
+      'delete_aspell_string_enumeration',
+      [:pointer],
+      :void
+
+    attach_function 'string_enumeration_next',
+      'aspell_string_enumeration_next',
+      [:pointer],
+      :string
   end # Aspell
 end # FFI
