@@ -21,6 +21,13 @@ module FFI
       [],
       :pointer
 
+    # TODO: find a way to use this in FFI::Aspell::Speller as it can reduce the
+    # total memory usage by a few MB.
+    attach_function 'config_delete',
+      'delete_aspell_config',
+      [:pointer],
+      :void
+
     attach_function 'config_retrieve',
       'aspell_config_retrieve',
       [:pointer, :string],
@@ -47,9 +54,20 @@ module FFI
       [:pointer],
       :pointer
 
+    attach_function 'speller_delete',
+      'delete_aspell_speller',
+      [:pointer],
+      :void
+
     attach_function 'speller_check',
       'aspell_speller_check',
       [:pointer, :string, :int],
       :bool
+
+    attach_function 'speller_suggest',
+      'aspell_speller_suggest',
+      [:pointer, :string, :int],
+      :pointer
+
   end # Aspell
 end # FFI

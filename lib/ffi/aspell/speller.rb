@@ -36,11 +36,47 @@ module FFI
           raise(TypeError, 'Words should respond to #to_s()')
         end
 
-        return Aspell.speller_check(
-          Aspell.speller_new(@config),
-          word.to_s,
-          word.length
-        )
+        speller = Aspell.speller_new(@config)
+        correct = Aspell.speller_check(speller, word.to_s, word.length)
+
+        Aspell.speller_delete(speller)
+
+        return correct
+      end
+
+      ##
+      # Returns an array containing words suggested as an alternative to the
+      # specified word.
+      #
+      # @since  13-04-2012
+      # @param  [#to_s] word The word for which to generate a suggestion list.
+      # @return [Array]
+      #
+      def suggestions(word)
+        speller     = Aspell.speller_new(@config)
+        suggestions = Aspell.speller_suggest(speller, word, word.length)
+
+        Aspell.speller_delete(speller)
+      end
+
+      ##
+      # Sets the suggestion mode for {FFI::Aspell::Speller#suggestions}.
+      #
+      # @since 13-04-2012
+      # @param [String] mode The suggestion mode to use.
+      #
+      def suggestion_mode=(mode)
+        set('sug-mode', mode)
+      end
+
+      ##
+      # Returns the suggestion mode that's currently used.
+      #
+      # @since  13-04-2012
+      # @return [String]
+      #
+      def suggestion_mode
+        return get('sug-mode')
       end
 
       ##
