@@ -43,8 +43,8 @@ module FFI
       # @return [TrueClass|FalseClass]
       #
       def correct?(word)
-        unless word.respond_to?(:to_s)
-          raise(TypeError, 'Words should respond to #to_s()')
+        unless word.is_a?(String)
+          raise(TypeError, "Expected String but got #{word.class} instead")
         end
 
         speller = Aspell.speller_new(@config)
