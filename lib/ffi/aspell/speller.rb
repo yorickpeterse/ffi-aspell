@@ -4,11 +4,81 @@ module FFI
     # The Speller class is used for spell checking individual words as well as
     # generating a list of suggestions.
     #
-    # TODO: currently this class creates a new speller object every time
-    # {FFI::Aspell::Speller#correct?} and similar methods are called. I'm not
-    # entirely sure if this is needed, if not it should be modified.
+    # ## Usage
+    #
+    # First you'll have to create a new instance:
+    #
+    #     speller = FFI::Aspell::Speller.new
+    #
+    # When creating a new instance you can specify the language as well as a set
+    # of arbitrary Aspell options (e.g. the personal wordlist file). The
+    # language can be set in the first parameter, other options are set as a
+    # hash in the second parameter:
+    #
+    #     speller = FFI::Aspell::Speller.new('nl', :personal => 'aspell.nl.pws')
+    #
+    # Unlike Raspell the keys of the hash used for additional options can be
+    # both strings and symbols.
+    #
+    # Once an instance has been created you can change the options, check the
+    # spelling of a word or retrieve a list of suggestions.
+    #
+    # ### Options
+    #
+    # There are four methods for dealing with Aspell options:
+    #
+    # * {FFI::Aspell::Speller#set}
+    # * {FFI::Aspell::Speller#get}
+    # * {FFI::Aspell::Speller#get_default}
+    # * {FFI::Aspell::Speller#reset}
+    #
+    # There are also two extra methods which can be used to set the suggestion
+    # mode, both these methods are simply shortcuts and use the `#set()` method
+    # for actually setting the values:
+    #
+    #     speller.suggestion_mode = 'fast'
+    #
+    #     if speller.suggestion_mode == 'fast'
+    #       # ...
+    #     end
+    #
+    # Setting an option:
+    #
+    #     speller.set('lang', 'en_US')
+    #
+    # Retrieving an option:
+    #
+    #     speller.get('lang')
+    #
+    # Resetting an option:
+    #
+    #     speller.reset('lang')
+    #
+    # ### Checking a Word
+    #
+    # Checking the spelling of a word is done using
+    # {FFI::Aspell::Speller#correct?}. This method takes a string containing the
+    # word to verify and returns `true` if the word is spelled correctly and
+    # `false` otherwise:
+    #
+    #     speller.correct?('cookie') # => true
+    #     speller.correct?('cookei') # => false
+    #
+    # ### Suggestions
+    #
+    # Suggestions can be generated using {FFI::Aspell::Speller.suggestions}.
+    # This method returns an array containing all the possible suggestions based
+    # on the suggestion mode that is being used:
+    #
+    #     speller.suggestions('cookei') # => ["cookie", ...]
+    #
+    # For more information see the documentation of the individual methods in
+    # this class.
     #
     # @since 13-04-2012
+    # @todo Currently this class creates a new speller object every time
+    #  {FFI::Aspell::Speller#correct?} and similar methods are called. I'm not
+    #  entirely sure if this is needed, if not it should be modified.
     #
     class Speller
       ##
@@ -60,10 +130,14 @@ module FFI
       # specified word.
       #
       # @since  13-04-2012
-      # @param  [#to_s] word The word for which to generate a suggestion list.
+      # @param  [String] word The word for which to generate a suggestion list.
       # @return [Array]
       #
       def suggestions(word)
+        unless word.is_a?(String)
+          raise(TypeError, "Expected String but got #{word.class} instead")
+        end
+
         speller     = Aspell.speller_new(@config)
         list        = Aspell.speller_suggest(speller, word, word.length)
         suggestions = []
