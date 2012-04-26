@@ -2,6 +2,7 @@ require 'ffi'
 
 require File.expand_path('../aspell/error', __FILE__)
 require File.expand_path('../aspell/speller', __FILE__)
+require File.expand_path('../aspell/version', __FILE__)
 
 module FFI
   ##
