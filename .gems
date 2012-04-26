@@ -1,4 +1,5 @@
 ffi
+rake
 redcarpet
 yard
 bacon
