@@ -3,7 +3,7 @@ require File.expand_path('../lib/ffi/aspell/version', __FILE__)
 Gem::Specification.new do |s|
   s.name        = 'ffi-aspell'
   s.version     = FFI::Aspell::VERSION
-  s.date        = '2012-04-13'
+  s.date        = '2012-04-26'
   s.authors     = ['Yorick Peterse']
   s.email       = 'yorickpeterse@gmail.com'
   s.summary     = 'FFI bindings for Aspell'
