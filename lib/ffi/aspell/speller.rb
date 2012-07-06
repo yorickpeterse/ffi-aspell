@@ -118,7 +118,8 @@ module FFI
         end
 
         speller = Aspell.speller_new(@config)
-        correct = Aspell.speller_check(speller, word.to_s, word.bytesize)
+        correct = Aspell.speller_check(speller, handle_input(word.to_s),
+                                       word.bytesize)
 
         Aspell.speller_delete(speller)
 
@@ -139,12 +140,13 @@ module FFI
         end
 
         speller     = Aspell.speller_new(@config)
-        list        = Aspell.speller_suggest(speller, word, word.bytesize)
+        list        = Aspell.speller_suggest(speller, handle_input(word),
+                                             word.bytesize)
         suggestions = []
         elements    = Aspell.word_list_elements(list)
 
         while word = Aspell.string_enumeration_next(elements)
-          suggestions << word
+          suggestions << handle_output(word)
         end
 
         Aspell.string_enumeration_delete(elements)
@@ -267,6 +269,40 @@ module FFI
           )
         end
       end
+
+      ##
+      # Converts word to encoding expected in aspell
+      # from current ruby encoding
+      #
+      # @param [String] word The word to convert
+      # return [String] word
+      #
+      def handle_input(word)
+        if defined?(Encoding)
+          enc = get('encoding')
+          word.encode!(enc)
+        end
+
+        word
+      end
+      private :handle_input
+
+      ##
+      # Converts word from aspell encoding to what ruby expects
+      #
+      # @param [String] word The word to convert
+      # return [String] word
+      #
+      def handle_output(word)
+        if defined?(Encoding)
+          enc = get('encoding')
+          word.force_encoding(enc).encode!
+        end
+
+        word
+      end
+      private :handle_output
+
     end # Speller
   end # Aspell
 end # FFI
