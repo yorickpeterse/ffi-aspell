@@ -8,6 +8,7 @@ the main author as of April 2012.
 
 * FFI: `gem install ffi`
 * Aspell (`sudo pacman -S aspell` if you're on Arch Linux)
+* Dutch and Greek language packs for Aspell.
 
 ## Usage
 
@@ -37,7 +38,7 @@ For more information see the YARD documentation.
 1. Make sure that Aspell and the English and Dutch dictionaries for it are
    installed as well. On Arch Linux this can be done by running `sudo pacman -S
    aspell aspell-en aspell-nl`.
-2. Import the gems using RVM: `rvm gemset import .gems`.
+2. Install the gems: `bundle install`
 3. Run the tests to see if everything is working: `rake test`
 4. Hack away!
 
