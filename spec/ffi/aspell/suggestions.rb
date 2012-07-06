@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 require File.expand_path('../../../helper', __FILE__)
 
 describe 'FFI::Aspell::Speller#suggestions' do
@@ -8,6 +10,16 @@ describe 'FFI::Aspell::Speller#suggestions' do
     suggestions.include?('coke').should   == true
     suggestions.include?('cookie').should == true
     suggestions.include?('cooked').should == true
+  end
+
+  it 'Return a list of UTF-8 words' do
+    with_internal_encoding('UTF-8') do
+      speller     = FFI::Aspell::Speller.new('el')
+      suggestions = speller.suggestions('χταπίδι')
+
+      suggestions.include?('χταπόδι').should  == true
+      suggestions.include?('απίδι').should    == true
+    end
   end
 
   it 'Return a list of word suggestions using the "bad-spellers" mode' do
