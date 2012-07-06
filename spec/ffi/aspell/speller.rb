@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 require File.expand_path('../../../helper', __FILE__)
 
 describe 'FFI::Aspell::Speller' do
@@ -58,6 +60,13 @@ describe 'FFI::Aspell::Speller' do
     speller.correct?('koekje').should == true
     speller.correct?('werld').should  == false
     speller.correct?('huis').should   == true
+  end
+
+  it 'Validate some UTF-8 (Greek) words' do
+    speller = FFI::Aspell::Speller.new('el')
+
+    speller.correct?('χταπόδι').should == true
+    speller.correct?('οιρανός').should  == false
   end
 
   it 'Change the language of an existing speller object' do
