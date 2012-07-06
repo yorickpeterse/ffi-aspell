@@ -119,10 +119,10 @@ module FFI
 
         speller = Aspell.speller_new(@config)
         correct = Aspell.speller_check(
-                    speller,
-                    handle_input(word.to_s),
-                    word.bytesize
-                  )
+          speller,
+          handle_input(word.to_s),
+          word.bytesize
+        )
 
         Aspell.speller_delete(speller)
 
@@ -144,10 +144,10 @@ module FFI
 
         speller     = Aspell.speller_new(@config)
         list        = Aspell.speller_suggest(
-                        speller,
-                        handle_input(word),
-                        word.bytesize
-                      )
+          speller,
+          handle_input(word),
+          word.bytesize
+        )
         suggestions = []
         elements    = Aspell.word_list_elements(list)
 
