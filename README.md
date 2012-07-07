@@ -8,7 +8,7 @@ the main author as of April 2012.
 
 * FFI: `gem install ffi`
 * Aspell (`sudo pacman -S aspell` if you're on Arch Linux)
-* Dutch and Greek language packs for Aspell.
+* Dutch and Greek language packs for Aspell (only when testing the code)
 
 ## Usage
 
