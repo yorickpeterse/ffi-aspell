@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 require 'ffi'
 
 require File.expand_path('../aspell/error', __FILE__)
