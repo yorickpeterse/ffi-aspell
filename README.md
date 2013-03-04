@@ -7,8 +7,12 @@ the main author as of April 2012.
 ## Requirements
 
 * FFI: `gem install ffi`
-* Aspell (`sudo pacman -S aspell` if you're on Arch Linux)
 * Dutch and Greek language packs for Aspell (only when testing the code)
+
+## Installing Aspell
+
+* Arch Linux: `sudo pacman -S aspell` 
+* OS X: (`brew install aspell --lang=en` 
 
 ## Usage
 
