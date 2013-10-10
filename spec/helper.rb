@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 require 'bacon'
 require File.expand_path('../../lib/ffi/aspell', __FILE__)
 
