@@ -8,11 +8,13 @@ the main author as of April 2012.
 
 * FFI: `gem install ffi`
 * Corresponding language packs. Without these the FFI binding will crash.
+* Aspell's library
 * Dutch and Greek language packs for Aspell (only when testing the code)
 
 ## Installing Aspell
 
 * Arch Linux: `sudo pacman -S aspell`
+* Ubuntu: `sudo apt-get install aspell libaspell-dev`
 * OS X: (`brew install aspell --lang=en`
 
 ## Usage
