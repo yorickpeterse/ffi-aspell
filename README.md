@@ -55,13 +55,12 @@ For more information see the YARD documentation.
 * Attached function names should resemble the C function names as much as
   possible.
 * No more than 80 characters per line of code.
-* Document your code, pull requests with big changes but without documentation
-  will be rejected.
-* Git commits should be signed off, this can be done by running `git commit
-  --sign`. Commits that are not signed off will be rejected.
-* Follow the Git commit standards are described here:
-  <http://ramaze.net/documentation/file.contributing.html#Commit_Messages>.
-* Test your code! Pull requests without tests will not be accepted.
+* Git commits should have a <= 50 character summary, optionally followed by a
+  blank line and a more in depth description of 80 characters per line.
+* Test your code!
+* Document code using YARD. You don't need to write an entire book but at least
+  give a brief summary of what a method does (not how it does it) and tag the
+  parameters and return value.
 
 ## License
 
