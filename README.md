@@ -15,7 +15,7 @@ the main author as of April 2012.
 
 * Arch Linux: `sudo pacman -S aspell`
 * Ubuntu: `sudo apt-get install aspell libaspell-dev`
-* OS X: (`brew install aspell --lang=en`
+* OS X: `brew install aspell --lang=en`
 
 ## Usage
 
@@ -42,9 +42,11 @@ For more information see the YARD documentation.
 
 ## Hacking & Contributing
 
-1. Make sure that Aspell and the English and Dutch dictionaries for it are
-   installed as well. On Arch Linux this can be done by running `sudo pacman -S
-   aspell aspell-en aspell-nl`.
+1. Make sure that Aspell and the English, Dutch, and Greek dictionaries for it are
+   installed as well
+    - Arch Linux: `sudo pacman -S aspell aspell-en aspell-nl aspell-el`
+    - Ubuntu: `sudo apt-get install aspell aspell-en aspell-nl aspell-el`
+    - OS X: `brew install aspell --with-lang-en --with-lang-nl --with-lang-el`
 2. Install the gems: `bundle install`
 3. Run the tests to see if everything is working: `rake test`
 4. Hack away!
