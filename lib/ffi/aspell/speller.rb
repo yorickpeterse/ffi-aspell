@@ -72,13 +72,28 @@ module FFI
     #
     #     speller.suggestions('cookei') # => ["cookie", ...]
     #
+    # ### Cleaning up
+    #
+    # When you're finished with the `Speller` object, call {#close} to free
+    # underlying resources:
+    #
+    #     speller = FFI::Aspell::Speller.new
+    #     speller.correct?('cookie') # => true
+    #     speller.close
+    #
+    # Alternatively, you can use the block form of {.open} to automatically
+    # free the resources:
+    #
+    #     FFI::Aspell::Speller.open do |speller|
+    #       puts speller.correct?('cookie') # => prints "true"
+    #     end
+    #
+    # {.open} takes the same parameters as {Speller#initialize Speller.new}.
+    #
     # For more information see the documentation of the individual methods in
     # this class.
     #
     # @since 13-04-2012
-    # @todo Currently this class creates a new speller object every time
-    #  {FFI::Aspell::Speller#correct?} and similar methods are called. I'm not
-    #  entirely sure if this is needed, if not it should be modified.
     #
     class Speller
       ##
@@ -96,6 +111,8 @@ module FFI
       # @param [String] language The language to use.
       # @param [Hash] options A hash containing extra configuration options,
       #  such as the "personal" option to set.
+      # @see #close #close
+      # @see .open Speller.open
       #
       def initialize(language = nil, options = {})
         @config = Aspell.config_new
@@ -103,6 +120,70 @@ module FFI
         options['lang'] = language if language
 
         options.each { |k, v| set(k, v) }
+
+        update_speller
+      end
+
+      ##
+      # Creates a new instance of the class, sets the language as well as the
+      # options specified in the `options` hash. If a block is given, the
+      # instance is yielded and automatically closed when exiting the block.
+      #
+      # @since 03-09-2014
+      # @param [String] language The language to use.
+      # @param [Hash] options A hash containing extra configuration options,
+      #  such as the "personal" option to set.
+      # @yield If a block is given, the speller instance is yielded.
+      # @yieldparam [Speller] speller The created speller. {Speller#close} is
+      #  automatically called when exiting the block.
+      # @return [Speller] If no block is given, the speller instance is
+      #  returned. It must be manually closed with {#close}.
+      # @return [Object] If a block is given, the value of the block is returned.
+      # @see #close #close
+      # @see #initialize Speller.new
+      #
+      def self.open(language = nil, options = {})
+        speller = self.new(language, options)
+
+        if block_given?
+          begin
+            return yield speller
+          ensure
+            speller.close
+          end
+        else
+          return speller
+        end
+      end
+
+      ##
+      # Closes the speller and frees underlying resources.
+      #
+      # @since 03-09-2014
+      # @raise [RuntimeError] If the speller is already closed.
+      # @return [nil]
+      # @see #initialize Speller.new
+      # @see .open Speller.open
+      # @see #closed? #closed?
+      #
+      def close
+        if closed?
+          raise(RuntimeError, 'Speller has already been closed.')
+        end
+
+        Aspell.speller_delete(@speller)
+        @speller = nil
+      end
+
+      ##
+      # Checks if the speller is closed or not.
+      #
+      # @since 03-09-2014
+      # @return [TrueClass|FalseClass]
+      # @see #close #close
+      #
+      def closed?
+        @speller.nil?
       end
 
       ##
@@ -117,14 +198,11 @@ module FFI
           raise(TypeError, "Expected String but got #{word.class} instead")
         end
 
-        speller = Aspell.speller_new(@config)
         correct = Aspell.speller_check(
-          speller,
+          @speller,
           handle_input(word.to_s),
           word.bytesize
         )
-
-        Aspell.speller_delete(speller)
 
         return correct
       end
@@ -142,9 +220,8 @@ module FFI
           raise(TypeError, "Expected String but got #{word.class} instead")
         end
 
-        speller     = Aspell.speller_new(@config)
         list        = Aspell.speller_suggest(
-          speller,
+          @speller,
           handle_input(word),
           word.bytesize
         )
@@ -156,7 +233,6 @@ module FFI
         end
 
         Aspell.string_enumeration_delete(elements)
-        Aspell.speller_delete(speller)
 
         return suggestions
       end
@@ -206,6 +282,8 @@ module FFI
         unless Aspell.config_replace(@config, key.to_s, value.to_s)
           raise(ConfigError, "Failed to set the configuration item #{key}")
         end
+
+        update_speller
       end
 
       ##
@@ -274,6 +352,8 @@ module FFI
               "it doesn't exist"
           )
         end
+
+        update_speller
       end
 
       ##
@@ -281,7 +361,7 @@ module FFI
       # from current ruby encoding
       #
       # @param [String] word The word to convert
-      # return [String] word
+      # @return [String] word
       #
       def handle_input(word)
         if defined?(Encoding)
@@ -297,7 +377,7 @@ module FFI
       # Converts word from aspell encoding to what ruby expects
       #
       # @param [String] word The word to convert
-      # return [String] word
+      # @return [String] word
       #
       def handle_output(word)
         if defined?(Encoding)
@@ -308,6 +388,17 @@ module FFI
         word
       end
       private :handle_output
+
+      ##
+      # Updates the internal speller object to use the current config.
+      #
+      # @return [nil]
+      #
+      def update_speller
+        Aspell.speller_delete(@speller)
+        @speller = Aspell.speller_new(@config)
+      end
+      private :update_speller
 
     end # Speller
   end # Aspell
