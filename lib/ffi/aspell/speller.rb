@@ -171,6 +171,8 @@ module FFI
           raise(RuntimeError, 'Speller has already been closed.')
         end
 
+        # Remove finalizer since we're manually freeing resources.
+        ObjectSpace.undefine_finalizer(self)
         Aspell.speller_delete(@speller)
         @speller = nil
       end
@@ -392,13 +394,27 @@ module FFI
       ##
       # Updates the internal speller object to use the current config.
       #
-      # @return [nil]
-      #
       def update_speller
+        # Remove finalizer since we're manually freeing resources.
+        ObjectSpace.undefine_finalizer(self)
+
         Aspell.speller_delete(@speller)
         @speller = Aspell.speller_new(@config)
+
+        ObjectSpace.define_finalizer(self, self.class.finalizer(@speller))
       end
       private :update_speller
+
+      ##
+      # Frees underlying resources.
+      #
+      # @api private
+      # @param [Speller] speller The speller to free.
+      # @return [Proc]
+      #
+      def self.finalizer(speller)
+        proc { Aspell.speller_delete(speller) }
+      end
 
     end # Speller
   end # Aspell
