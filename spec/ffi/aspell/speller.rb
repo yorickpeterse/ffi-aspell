@@ -104,4 +104,77 @@ describe 'FFI::Aspell::Speller' do
     speller.correct?('github').should == true
     speller.correct?('nodoc').should  == true
   end
+
+  it 'Supports language and options in .open' do
+    FFI::Aspell::Speller.open('nl', :personal => 'foo') do |speller|
+      speller.get(:personal).should == 'foo'
+      speller.get('lang').should == 'nl'
+      speller.correct?('koekje').should == true
+      speller.correct?('werld').should  == false
+      speller.correct?('huis').should   == true
+    end
+  end
+
+  it 'Yields a valid speller object to a .open block' do
+    FFI::Aspell::Speller.open do |speller|
+      speller.should.not == nil
+      speller.correct?('cookie').should == true
+      speller.correct?('werld').should  == false
+      speller.correct?('house').should  == true
+      speller.correct?('huis').should   == false
+    end
+  end
+
+  it 'Returns a valid speller object from .open' do
+    speller = FFI::Aspell::Speller.open
+    speller.correct?('cookie').should == true
+    speller.correct?('werld').should  == false
+    speller.correct?('house').should  == true
+    speller.correct?('huis').should   == false
+    speller.close
+  end
+
+  it 'Returns the block value from .open' do
+    value = FFI::Aspell::Speller.open do |speller|
+      speller.correct?('cookie').should == true
+      42
+    end
+
+    value.should == 42
+  end
+
+  it 'Reports its closed status' do
+    speller = FFI::Aspell::Speller.new
+    speller.closed?.should == false
+    speller.close
+    speller.closed?.should == true
+
+    outer_speller = FFI::Aspell::Speller.open do |speller|
+      speller.closed?.should == false
+      speller
+    end
+    outer_speller.closed?.should == true
+  end
+
+  it 'Raise when closing more than once' do
+    should.raise(RuntimeError) do
+      speller = FFI::Aspell::Speller.new
+      speller.close
+      speller.close
+    end
+  end
+
+  it 'Closes when exception occurs in .open block' do
+    outer_speller = nil
+
+    should.raise(StandardError) do
+      FFI::Aspell::Speller.open do |speller|
+        outer_speller = speller
+        raise StandardError, 'Test error.'
+        speller.correct?('cookie').should == true # Never reached.
+      end
+    end
+
+    outer_speller.closed?.should == true
+  end
 end
