@@ -76,9 +76,6 @@ module FFI
     # this class.
     #
     # @since 13-04-2012
-    # @todo Currently this class creates a new speller object every time
-    #  {FFI::Aspell::Speller#correct?} and similar methods are called. I'm not
-    #  entirely sure if this is needed, if not it should be modified.
     #
     class Speller
       ##
@@ -103,6 +100,8 @@ module FFI
         options['lang'] = language if language
 
         options.each { |k, v| set(k, v) }
+
+        update_speller
       end
 
       ##
@@ -117,14 +116,11 @@ module FFI
           raise(TypeError, "Expected String but got #{word.class} instead")
         end
 
-        speller = Aspell.speller_new(@config)
         correct = Aspell.speller_check(
-          speller,
+          @speller,
           handle_input(word.to_s),
           word.bytesize
         )
-
-        Aspell.speller_delete(speller)
 
         return correct
       end
@@ -142,9 +138,8 @@ module FFI
           raise(TypeError, "Expected String but got #{word.class} instead")
         end
 
-        speller     = Aspell.speller_new(@config)
         list        = Aspell.speller_suggest(
-          speller,
+          @speller,
           handle_input(word),
           word.bytesize
         )
@@ -156,7 +151,6 @@ module FFI
         end
 
         Aspell.string_enumeration_delete(elements)
-        Aspell.speller_delete(speller)
 
         return suggestions
       end
@@ -206,6 +200,8 @@ module FFI
         unless Aspell.config_replace(@config, key.to_s, value.to_s)
           raise(ConfigError, "Failed to set the configuration item #{key}")
         end
+
+        update_speller
       end
 
       ##
@@ -274,6 +270,8 @@ module FFI
               "it doesn't exist"
           )
         end
+
+        update_speller
       end
 
       ##
@@ -281,7 +279,7 @@ module FFI
       # from current ruby encoding
       #
       # @param [String] word The word to convert
-      # return [String] word
+      # @return [String] word
       #
       def handle_input(word)
         if defined?(Encoding)
@@ -297,7 +295,7 @@ module FFI
       # Converts word from aspell encoding to what ruby expects
       #
       # @param [String] word The word to convert
-      # return [String] word
+      # @return [String] word
       #
       def handle_output(word)
         if defined?(Encoding)
@@ -308,6 +306,32 @@ module FFI
         word
       end
       private :handle_output
+
+      ##
+      # Updates the internal speller object to use the current config.
+      #
+      def update_speller
+        # Remove any existing finalizers since we're manually freeing
+        # the current speller resources now.
+        ObjectSpace.undefine_finalizer(self)
+
+        Aspell.speller_delete(@speller)
+        @speller = Aspell.speller_new(@config)
+
+        ObjectSpace.define_finalizer(self, self.class.finalizer(@speller))
+      end
+      private :update_speller
+
+      ##
+      # Frees underlying resources.
+      #
+      # @api private
+      # @param [Speller] speller The speller to free.
+      # @return [Proc]
+      #
+      def self.finalizer(speller)
+        proc { Aspell.speller_delete(speller) }
+      end
 
     end # Speller
   end # Aspell
