@@ -187,7 +187,7 @@ module FFI
       # @see    #close #close
       #
       def closed?
-        @speller.nil? && @config.nil?
+        @config.nil?
       end
 
       ##
