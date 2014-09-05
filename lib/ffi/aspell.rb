@@ -38,6 +38,20 @@ module FFI
       :pointer
 
     ##
+    # Removes a config pointer and frees the memory associated with said
+    # pointer.
+    #
+    # @since  05-09-2014
+    # @method config_delete(config)
+    # @scope  class
+    # @param  [FFI::Pointer] config The pointer to remove.
+    #
+    attach_function 'config_delete',
+      'delete_aspell_config',
+      [:pointer],
+      :void
+
+    ##
     # Retrieves the value of a given configuration item. The value is returned
     # as a string or nil upon failure.
     #

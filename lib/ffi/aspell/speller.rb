@@ -173,6 +173,10 @@ module FFI
 
         # Remove finalizer since we're manually freeing resources.
         ObjectSpace.undefine_finalizer(self)
+
+        Aspell.config_delete(@config)
+        @config = nil
+
         Aspell.speller_delete(@speller)
         @speller = nil
       end
@@ -185,7 +189,7 @@ module FFI
       # @see #close #close
       #
       def closed?
-        @speller.nil?
+        @speller.nil? && @config.nil?
       end
 
       ##
@@ -401,7 +405,10 @@ module FFI
         Aspell.speller_delete(@speller)
         @speller = Aspell.speller_new(@config)
 
-        ObjectSpace.define_finalizer(self, self.class.finalizer(@speller))
+        ObjectSpace.define_finalizer(
+          self,
+          self.class.finalizer(@config, @speller)
+        )
       end
       private :update_speller
 
@@ -409,11 +416,15 @@ module FFI
       # Frees underlying resources.
       #
       # @api private
-      # @param [Speller] speller The speller to free.
+      # @param [FFI::Pointer] config The config to free.
+      # @param [FFI::Pointer] speller The speller to free.
       # @return [Proc]
       #
-      def self.finalizer(speller)
-        proc { Aspell.speller_delete(speller) }
+      def self.finalizer(config, speller)
+        proc {
+          Aspell.config_delete(config)
+          Aspell.speller_delete(speller)
+        }
       end
 
     end # Speller
