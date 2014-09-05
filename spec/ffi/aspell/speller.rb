@@ -156,14 +156,6 @@ describe 'FFI::Aspell::Speller' do
     outer_speller.closed?.should == true
   end
 
-  it 'Raise when closing more than once' do
-    should.raise(RuntimeError) do
-      speller = FFI::Aspell::Speller.new
-      speller.close
-      speller.close
-    end
-  end
-
   it 'Closes when exception occurs in .open block' do
     outer_speller = nil
 
@@ -176,5 +168,46 @@ describe 'FFI::Aspell::Speller' do
     end
 
     outer_speller.closed?.should == true
+  end
+
+  it 'Raise when speller is closed' do
+    speller = FFI::Aspell::Speller.new
+    speller.close
+
+    should.raise(RuntimeError) do
+      speller.close
+    end
+
+    should.raise(RuntimeError) do
+      speller.correct?('cookie')
+    end
+
+    should.raise(RuntimeError) do
+      speller.suggestions('cookei')
+    end
+
+    should.raise(RuntimeError) do
+      speller.suggestion_mode = 'bad-spellers'
+    end
+
+    should.raise(RuntimeError) do
+      mode = speller.suggestion_mode
+    end
+
+    should.raise(RuntimeError) do
+      speller.set('personal', 'foo')
+    end
+
+    should.raise(RuntimeError) do
+      speller.get('lang')
+    end
+
+    should.raise(RuntimeError) do
+      speller.get_default('lang')
+    end
+
+    should.raise(RuntimeError) do
+      speller.reset('lang')
+    end
   end
 end
