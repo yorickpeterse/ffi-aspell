@@ -111,8 +111,8 @@ module FFI
       # @param [String] language The language to use.
       # @param [Hash] options A hash containing extra configuration options,
       #  such as the "personal" option to set.
-      # @see #close #close
-      # @see .open Speller.open
+      # @see   #close #close
+      # @see   .open Speller.open
       #
       def initialize(language = nil, options = {})
         @config = Aspell.config_new
@@ -129,18 +129,18 @@ module FFI
       # options specified in the `options` hash. If a block is given, the
       # instance is yielded and automatically closed when exiting the block.
       #
-      # @since 03-09-2014
-      # @param [String] language The language to use.
-      # @param [Hash] options A hash containing extra configuration options,
+      # @since  03-09-2014
+      # @param  [String] language The language to use.
+      # @param  [Hash] options A hash containing extra configuration options,
       #  such as the "personal" option to set.
-      # @yield If a block is given, the speller instance is yielded.
+      # @yield  If a block is given, the speller instance is yielded.
       # @yieldparam [Speller] speller The created speller. {Speller#close} is
       #  automatically called when exiting the block.
       # @return [Speller] If no block is given, the speller instance is
       #  returned. It must be manually closed with {#close}.
       # @return [Object] If a block is given, the value of the block is returned.
-      # @see #close #close
-      # @see #initialize Speller.new
+      # @see    #close #close
+      # @see    #initialize Speller.new
       #
       def self.open(language = nil, options = {})
         speller = self.new(language, options)
@@ -159,12 +159,12 @@ module FFI
       ##
       # Closes the speller and frees underlying resources.
       #
-      # @since 03-09-2014
+      # @since  03-09-2014
       # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [nil]
-      # @see #initialize Speller.new
-      # @see .open Speller.open
-      # @see #closed? #closed?
+      # @see    #initialize Speller.new
+      # @see    .open Speller.open
+      # @see    #closed? #closed?
       #
       def close
         check_closed
@@ -182,9 +182,9 @@ module FFI
       ##
       # Checks if the speller is closed or not.
       #
-      # @since 03-09-2014
+      # @since  03-09-2014
       # @return [TrueClass|FalseClass]
-      # @see #close #close
+      # @see    #close #close
       #
       def closed?
         @speller.nil? && @config.nil?
@@ -193,7 +193,7 @@ module FFI
       ##
       # Raises error if speller is closed.
       #
-      # @since 04-09-2014
+      # @since  04-09-2014
       # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [nil]
       #
@@ -400,7 +400,7 @@ module FFI
       # Converts word to encoding expected in aspell
       # from current ruby encoding
       #
-      # @param [String] word The word to convert
+      # @param  [String] word The word to convert
       # @return [String] word
       #
       def handle_input(word)
@@ -416,7 +416,7 @@ module FFI
       ##
       # Converts word from aspell encoding to what ruby expects
       #
-      # @param [String] word The word to convert
+      # @param  [String] word The word to convert
       # @return [String] word
       #
       def handle_output(word)
@@ -449,9 +449,9 @@ module FFI
       ##
       # Frees underlying resources.
       #
-      # @api private
-      # @param [FFI::Pointer] config The config to free.
-      # @param [FFI::Pointer] speller The speller to free.
+      # @api    private
+      # @param  [FFI::Pointer] config The config to free.
+      # @param  [FFI::Pointer] speller The speller to free.
       # @return [Proc]
       #
       def self.finalizer(config, speller)
