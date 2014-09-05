@@ -191,20 +191,6 @@ module FFI
       end
 
       ##
-      # Raises error if speller is closed.
-      #
-      # @since  04-09-2014
-      # @raise  [RuntimeError] Raised if the speller is closed.
-      # @return [nil]
-      #
-      def check_closed
-        if closed?
-          raise(RuntimeError, 'Speller is closed.')
-        end
-      end
-      private :check_closed
-
-      ##
       # Checks if the given word is correct or not.
       #
       # @since  13-04-2012
@@ -428,6 +414,20 @@ module FFI
         word
       end
       private :handle_output
+
+      ##
+      # Raises error if speller is closed.
+      #
+      # @since  04-09-2014
+      # @raise  [RuntimeError] Raised if the speller is closed.
+      # @return [nil]
+      #
+      def check_closed
+        if closed?
+          raise(RuntimeError, 'Speller is closed.')
+        end
+      end
+      private :check_closed
 
       ##
       # Updates the internal speller object to use the current config.
