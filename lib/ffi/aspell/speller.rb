@@ -160,16 +160,14 @@ module FFI
       # Closes the speller and frees underlying resources.
       #
       # @since 03-09-2014
-      # @raise [RuntimeError] If the speller is already closed.
+      # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [nil]
       # @see #initialize Speller.new
       # @see .open Speller.open
       # @see #closed? #closed?
       #
       def close
-        if closed?
-          raise(RuntimeError, 'Speller has already been closed.')
-        end
+        check_closed
 
         # Remove finalizer since we're manually freeing resources.
         ObjectSpace.undefine_finalizer(self)
@@ -193,13 +191,30 @@ module FFI
       end
 
       ##
+      # Raises error if speller is closed.
+      #
+      # @since 04-09-2014
+      # @raise  [RuntimeError] Raised if the speller is closed.
+      # @return [nil]
+      #
+      def check_closed
+        if closed?
+          raise(RuntimeError, 'Speller is closed.')
+        end
+      end
+      private :check_closed
+
+      ##
       # Checks if the given word is correct or not.
       #
       # @since  13-04-2012
       # @param  [String] word The word to check.
+      # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [TrueClass|FalseClass]
       #
       def correct?(word)
+        check_closed
+
         unless word.is_a?(String)
           raise(TypeError, "Expected String but got #{word.class} instead")
         end
@@ -219,9 +234,12 @@ module FFI
       #
       # @since  13-04-2012
       # @param  [String] word The word for which to generate a suggestion list.
+      # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [Array]
       #
       def suggestions(word)
+        check_closed
+
         unless word.is_a?(String)
           raise(TypeError, "Expected String but got #{word.class} instead")
         end
@@ -248,8 +266,10 @@ module FFI
       #
       # @since 13-04-2012
       # @param [String] mode The suggestion mode to use.
+      # @raise [RuntimeError] Raised if the speller is closed.
       #
       def suggestion_mode=(mode)
+        check_closed
         set('sug-mode', mode)
       end
 
@@ -257,9 +277,11 @@ module FFI
       # Returns the suggestion mode that's currently used.
       #
       # @since  13-04-2012
+      # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [String]
       #
       def suggestion_mode
+        check_closed
         return get('sug-mode')
       end
 
@@ -269,10 +291,13 @@ module FFI
       # @since 13-04-2012
       # @param [#to_s] key The configuration key to set.
       # @param [#to_s] value The value of the configuration key.
+      # @raise [RuntimeError] Raised if the speller is closed.
       # @raise [FFI::Aspell::ConfigError] Raised when the configuration value
       #  could not be set or when an incorrect suggestion mode was given.
       #
       def set(key, value)
+        check_closed
+
         unless key.respond_to?(:to_s)
           raise(TypeError, 'Configuration keys should respond to #to_s()')
         end
@@ -298,10 +323,13 @@ module FFI
       # @since  13-04-2012
       # @param  [#to_s] key The configuration key to retrieve.
       # @return [String]
+      # @raise  [RuntimeError] Raised if the speller is closed.
       # @raise  [FFI::Aspell::ConfigError] Raised when the configuration item
       #  does not exist.
       #
       def get(key)
+        check_closed
+
         unless key.respond_to?(:to_s)
           raise(TypeError, 'Configuration keys should respond to #to_s()')
         end
@@ -321,10 +349,13 @@ module FFI
       # @since  13-04-2012
       # @param  [#to_s] key The name of the configuration key.
       # @return [String]
+      # @raise  [RuntimeError] Raised if the speller is closed.
       # @raise  [FFI::Aspell::ConfigError] Raised when the configuration item
       #  does not exist.
       #
       def get_default(key)
+        check_closed
+
         unless key.respond_to?(:to_s)
           raise(TypeError, 'Configuration keys should respond to #to_s()')
         end
@@ -343,10 +374,13 @@ module FFI
       #
       # @since 13-04-2012
       # @param [#to_s] key The name of the configuration item to reset.
+      # @raise [RuntimeError] Raised if the speller is closed.
       # @raise [FFI::Aspell::ConfigError] Raised when the configuration item
       #  could not be reset.
       #
       def reset(key)
+        check_closed
+
         unless key.respond_to?(:to_s)
           raise(TypeError, 'Configuration keys should respond to #to_s()')
         end
