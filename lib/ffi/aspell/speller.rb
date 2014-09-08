@@ -74,8 +74,9 @@ module FFI
     #
     # ### Cleaning up
     #
-    # When you're finished with the `Speller` object, call {#close} to free
-    # underlying resources:
+    # When you're finished with the `Speller` object, you can let the finalizer
+    # automatically free resources, otherwise, call {#close} to explicitly free
+    # the underlying resources:
     #
     #     speller = FFI::Aspell::Speller.new
     #     speller.correct?('cookie') # => true
@@ -104,46 +105,19 @@ module FFI
       SUGGESTION_MODES = ['ultra', 'fast', 'normal', 'bad-spellers']
 
       ##
-      # Creates a new instance of the class, sets the language as well as the
-      # options specified in the `options` hash.
-      #
-      # @since 13-04-2012
-      # @param [String] language The language to use.
-      # @param [Hash] options A hash containing extra configuration options,
-      #  such as the "personal" option to set.
-      # @see   #close #close
-      # @see   .open Speller.open
-      #
-      def initialize(language = nil, options = {})
-        @config = Aspell.config_new
-
-        options['lang'] = language if language
-
-        options.each { |k, v| set(k, v) }
-
-        update_speller
-      end
-
-      ##
-      # Creates a new instance of the class, sets the language as well as the
-      # options specified in the `options` hash. If a block is given, the
+      # Creates a new instance of the class. If a block is given, the
       # instance is yielded and automatically closed when exiting the block.
+      # The parameters are the same as those to {#initialize .new}.
       #
-      # @since  03-09-2014
-      # @param  [String] language The language to use.
-      # @param  [Hash] options A hash containing extra configuration options,
-      #  such as the "personal" option to set.
       # @yield  If a block is given, the speller instance is yielded.
       # @yieldparam [Speller] speller The created speller. {Speller#close} is
       #  automatically called when exiting the block.
       # @return [Speller] If no block is given, the speller instance is
       #  returned. It must be manually closed with {#close}.
       # @return [Object] If a block is given, the value of the block is returned.
-      # @see    #close #close
-      # @see    #initialize Speller.new
       #
-      def self.open(language = nil, options = {})
-        speller = self.new(language, options)
+      def self.open(*args)
+        speller = self.new(*args)
 
         if block_given?
           begin
@@ -157,14 +131,45 @@ module FFI
       end
 
       ##
-      # Closes the speller and frees underlying resources.
+      # Frees underlying resources.
       #
-      # @since  03-09-2014
-      # @raise  [RuntimeError] Raised if the speller is closed.
-      # @return [nil]
-      # @see    #initialize Speller.new
-      # @see    .open Speller.open
-      # @see    #closed? #closed?
+      # @api    private
+      # @param  [FFI::Pointer] config The config to free.
+      # @param  [FFI::Pointer] speller The speller to free.
+      # @return [Proc]
+      #
+      def self.finalizer(config, speller)
+        proc {
+          Aspell.config_delete(config)
+          Aspell.speller_delete(speller)
+        }
+      end
+
+      ##
+      # Creates a new instance of the class, sets the language as well as the
+      # options specified in the `options` hash.
+      #
+      # @since 13-04-2012
+      # @param [String] language The language to use.
+      # @param [Hash] options A hash containing extra configuration options,
+      #  such as the "personal" option to set.
+      #
+      def initialize(language = nil, options = {})
+        @config = Aspell.config_new
+
+        options['lang'] = language if language
+
+        options.each { |k, v| set(k, v) }
+
+        update_speller
+      end
+
+      ##
+      # Closes the speller and frees underlying resources. Calling this is
+      # not absolutely required as the resources will eventually be freed in
+      # the finalizer.
+      #
+      # @raise [RuntimeError] Raised if the speller is closed.
       #
       def close
         check_closed
@@ -182,9 +187,7 @@ module FFI
       ##
       # Checks if the speller is closed or not.
       #
-      # @since  03-09-2014
       # @return [TrueClass|FalseClass]
-      # @see    #close #close
       #
       def closed?
         @config.nil?
@@ -418,7 +421,6 @@ module FFI
       ##
       # Raises error if speller is closed.
       #
-      # @since  04-09-2014
       # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [nil]
       #
@@ -445,21 +447,6 @@ module FFI
         )
       end
       private :update_speller
-
-      ##
-      # Frees underlying resources.
-      #
-      # @api    private
-      # @param  [FFI::Pointer] config The config to free.
-      # @param  [FFI::Pointer] speller The speller to free.
-      # @return [Proc]
-      #
-      def self.finalizer(config, speller)
-        proc {
-          Aspell.config_delete(config)
-          Aspell.speller_delete(speller)
-        }
-      end
 
     end # Speller
   end # Aspell
