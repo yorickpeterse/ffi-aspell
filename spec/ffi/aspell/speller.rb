@@ -118,7 +118,6 @@ describe 'FFI::Aspell::Speller' do
 
   it 'Reports its closed status' do
     speller = FFI::Aspell::Speller.open
-    speller.should.not == nil
     speller.closed?.should == false
     speller.close
     speller.closed?.should == true
