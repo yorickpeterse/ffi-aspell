@@ -1,4 +1,4 @@
-desc 'Runs all the tests using Bacon'
+desc 'Runs the tests'
 task :test do
-  Dir['./spec/ffi/aspell/**/*.rb'].sort.each { |spec| require(spec) }
+  sh 'rspec spec --order random'
 end

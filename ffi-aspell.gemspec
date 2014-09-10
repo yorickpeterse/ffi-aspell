@@ -10,6 +10,8 @@ Gem::Specification.new do |s|
   s.description = s.summary
   s.has_rdoc    = 'yard'
 
+  s.required_ruby_version = '>= 1.9.3'
+
   s.files = Dir.glob([
     'doc/**/*',
     'lib/**/*',
@@ -23,5 +25,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake'
   s.add_development_dependency 'yard'
   s.add_development_dependency 'kramdown'
-  s.add_development_dependency 'bacon'
+  s.add_development_dependency 'rspec'
 end

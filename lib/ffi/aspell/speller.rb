@@ -94,52 +94,50 @@ module FFI
     # For more information see the documentation of the individual methods in
     # this class.
     #
-    # @since 13-04-2012
-    #
     class Speller
       ##
       # Array containing the possible suggestion modes to use.
       #
-      # @since 18-04-2012
+      # @return [Array]
       #
       SUGGESTION_MODES = ['ultra', 'fast', 'normal', 'bad-spellers']
 
       ##
-      # Creates a new instance of the class. If a block is given, the
-      # instance is yielded and automatically closed when exiting the block.
-      # The parameters are the same as those to {#initialize .new}.
+      # Creates a new instance of the class. If a block is given, the instance
+      # is yielded and automatically closed when exiting the block.
       #
       # @yield  If a block is given, the speller instance is yielded.
+      #
       # @yieldparam [Speller] speller The created speller. {Speller#close} is
       #  automatically called when exiting the block.
-      # @return [Speller] If no block is given, the speller instance is
-      #  returned. It must be manually closed with {#close}.
-      # @return [Object] If a block is given, the value of the block is returned.
+      #
+      # @return [Speller]
+      #
+      # @see [#initialize]
       #
       def self.open(*args)
         speller = self.new(*args)
 
         if block_given?
           begin
-            return yield speller
+            yield speller
           ensure
             speller.close
           end
-        else
-          return speller
         end
+
+        return speller
       end
 
       ##
-      # Frees underlying resources.
+      # Returns a proc for a finalizer, used for cleaning up native resources.
       #
-      # @api    private
-      # @param  [FFI::Pointer] config The config to free.
-      # @param  [FFI::Pointer] speller The speller to free.
+      # @param  [FFI::Pointer] config
+      # @param  [FFI::Pointer] speller
       # @return [Proc]
       #
       def self.finalizer(config, speller)
-        proc {
+        return proc {
           Aspell.config_delete(config)
           Aspell.speller_delete(speller)
         }
@@ -149,8 +147,8 @@ module FFI
       # Creates a new instance of the class, sets the language as well as the
       # options specified in the `options` hash.
       #
-      # @since 13-04-2012
       # @param [String] language The language to use.
+      #
       # @param [Hash] options A hash containing extra configuration options,
       #  such as the "personal" option to set.
       #
@@ -165,9 +163,9 @@ module FFI
       end
 
       ##
-      # Closes the speller and frees underlying resources. Calling this is
-      # not absolutely required as the resources will eventually be freed in
-      # the finalizer.
+      # Closes the speller and frees underlying resources. Calling this is not
+      # absolutely required as the resources will eventually be freed by the
+      # finalizer.
       #
       # @raise [RuntimeError] Raised if the speller is closed.
       #
@@ -178,9 +176,11 @@ module FFI
         ObjectSpace.undefine_finalizer(self)
 
         Aspell.config_delete(@config)
+
         @config = nil
 
         Aspell.speller_delete(@speller)
+
         @speller = nil
       end
 
@@ -190,13 +190,12 @@ module FFI
       # @return [TrueClass|FalseClass]
       #
       def closed?
-        @config.nil?
+        return @config.nil?
       end
 
       ##
       # Checks if the given word is correct or not.
       #
-      # @since  13-04-2012
       # @param  [String] word The word to check.
       # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [TrueClass|FalseClass]
@@ -221,7 +220,6 @@ module FFI
       # Returns an array containing words suggested as an alternative to the
       # specified word.
       #
-      # @since  13-04-2012
       # @param  [String] word The word for which to generate a suggestion list.
       # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [Array]
@@ -233,11 +231,12 @@ module FFI
           raise(TypeError, "Expected String but got #{word.class} instead")
         end
 
-        list        = Aspell.speller_suggest(
+        list = Aspell.speller_suggest(
           @speller,
           handle_input(word),
           word.bytesize
         )
+
         suggestions = []
         elements    = Aspell.word_list_elements(list)
 
@@ -253,31 +252,30 @@ module FFI
       ##
       # Sets the suggestion mode for {FFI::Aspell::Speller#suggestions}.
       #
-      # @since 13-04-2012
       # @param [String] mode The suggestion mode to use.
       # @raise [RuntimeError] Raised if the speller is closed.
       #
       def suggestion_mode=(mode)
         check_closed
+
         set('sug-mode', mode)
       end
 
       ##
       # Returns the suggestion mode that's currently used.
       #
-      # @since  13-04-2012
       # @raise  [RuntimeError] Raised if the speller is closed.
       # @return [String]
       #
       def suggestion_mode
         check_closed
+
         return get('sug-mode')
       end
 
       ##
       # Sets a configuration option.
       #
-      # @since 13-04-2012
       # @param [#to_s] key The configuration key to set.
       # @param [#to_s] value The value of the configuration key.
       # @raise [RuntimeError] Raised if the speller is closed.
@@ -309,7 +307,6 @@ module FFI
       ##
       # Retrieves the value of the specified configuration item.
       #
-      # @since  13-04-2012
       # @param  [#to_s] key The configuration key to retrieve.
       # @return [String]
       # @raise  [RuntimeError] Raised if the speller is closed.
@@ -335,7 +332,6 @@ module FFI
       ##
       # Retrieves the default value for the given configuration key.
       #
-      # @since  13-04-2012
       # @param  [#to_s] key The name of the configuration key.
       # @return [String]
       # @raise  [RuntimeError] Raised if the speller is closed.
@@ -361,7 +357,6 @@ module FFI
       ##
       # Resets a configuration item to its default value.
       #
-      # @since 13-04-2012
       # @param [#to_s] key The name of the configuration item to reset.
       # @raise [RuntimeError] Raised if the speller is closed.
       # @raise [FFI::Aspell::ConfigError] Raised when the configuration item
@@ -385,6 +380,8 @@ module FFI
         update_speller
       end
 
+      private
+
       ##
       # Converts word to encoding expected in aspell
       # from current ruby encoding
@@ -393,14 +390,10 @@ module FFI
       # @return [String] word
       #
       def handle_input(word)
-        if defined?(Encoding)
-          enc = get('encoding')
-          word.encode!(enc)
-        end
+        enc = get('encoding')
 
-        word
+        return word.encode(enc)
       end
-      private :handle_input
 
       ##
       # Converts word from aspell encoding to what ruby expects
@@ -409,14 +402,10 @@ module FFI
       # @return [String] word
       #
       def handle_output(word)
-        if defined?(Encoding)
-          enc = get('encoding')
-          word.force_encoding(enc).encode!
-        end
+        enc = get('encoding')
 
-        word
+        return word.force_encoding(enc).encode
       end
-      private :handle_output
 
       ##
       # Raises error if speller is closed.
@@ -426,19 +415,18 @@ module FFI
       #
       def check_closed
         if closed?
-          raise(RuntimeError, 'Speller is closed.')
+          raise(RuntimeError, 'This Speller object has already been closed')
         end
       end
-      private :check_closed
 
       ##
       # Updates the internal speller object to use the current config.
       #
       def update_speller
-        # Remove finalizer since we're manually freeing resources.
         ObjectSpace.undefine_finalizer(self)
 
         Aspell.speller_delete(@speller)
+
         @speller = Aspell.speller_new(@config)
 
         ObjectSpace.define_finalizer(
@@ -446,8 +434,6 @@ module FFI
           self.class.finalizer(@config, @speller)
         )
       end
-      private :update_speller
-
     end # Speller
   end # Aspell
 end # FFI

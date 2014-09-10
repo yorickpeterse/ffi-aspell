@@ -1,8 +1,5 @@
-require 'bacon'
-require File.expand_path('../../lib/ffi/aspell', __FILE__)
-
-Bacon.extend(Bacon::TapOutput)
-Bacon.summary_on_exit
+require 'rspec'
+require_relative '../lib/ffi/aspell'
 
 FIXTURES = File.expand_path('../fixtures', __FILE__)
 
@@ -17,8 +14,23 @@ FIXTURES = File.expand_path('../fixtures', __FILE__)
 def with_internal_encoding(enc)
   if defined?(Encoding)
     old_enc = Encoding.default_internal
+
     Encoding.default_internal = enc
+
     yield
+
     Encoding.default_internal = old_enc
+  end
+end
+
+RSpec.configure do |config|
+  config.color = true
+
+  config.expect_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+
+  config.mock_with :rspec do |c|
+    c.syntax = [:should, :expect]
   end
 end

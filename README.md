@@ -6,12 +6,16 @@ the main author as of April 2012.
 
 ## Requirements
 
-* FFI: `gem install ffi`
-* Corresponding language packs. Without these the FFI binding will crash.
-* Aspell's library
-* Dutch and Greek language packs for Aspell (only when testing the code)
+* Ruby 1.9.3 or newer
+* Aspell
+* Aspell language packs for your used language(s)
 
-## Installing Aspell
+For running the tests the following is required:
+
+* Dutch language pack
+* Greek language pack
+
+Aspell can be installed as following:
 
 * Arch Linux: `sudo pacman -S aspell`
 * Ubuntu: `sudo apt-get install aspell libaspell-dev`
@@ -21,14 +25,14 @@ the main author as of April 2012.
 
 Install the gem:
 
-    $ gem install ffi-aspell
+    gem install ffi-aspell
 
 Load it:
 
     require 'ffi/aspell'
 
 The primary class is `FFI::Aspell::Speller`, this class can be used to check for
-spelling errors and the like:
+spelling errors and the likes:
 
     speller = FFI::Aspell::Speller.new('en_US')
 
