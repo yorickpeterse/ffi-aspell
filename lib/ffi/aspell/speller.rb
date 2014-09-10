@@ -285,14 +285,6 @@ module FFI
       def set(key, value)
         check_closed
 
-        unless key.respond_to?(:to_s)
-          raise(TypeError, 'Configuration keys should respond to #to_s()')
-        end
-
-        unless value.respond_to?(:to_s)
-          raise(TypeError, 'Configuration values should respond to #to_s()')
-        end
-
         if key == 'sug-mode' and !SUGGESTION_MODES.include?(value)
           raise(ConfigError, "The suggestion mode #{value} is invalid")
         end
@@ -316,10 +308,6 @@ module FFI
       def get(key)
         check_closed
 
-        unless key.respond_to?(:to_s)
-          raise(TypeError, 'Configuration keys should respond to #to_s()')
-        end
-
         value = Aspell.config_retrieve(@config, key.to_s)
 
         if value
@@ -341,10 +329,6 @@ module FFI
       def get_default(key)
         check_closed
 
-        unless key.respond_to?(:to_s)
-          raise(TypeError, 'Configuration keys should respond to #to_s()')
-        end
-
         value = Aspell.config_retrieve_default(@config, key.to_s)
 
         if value
@@ -364,10 +348,6 @@ module FFI
       #
       def reset(key)
         check_closed
-
-        unless key.respond_to?(:to_s)
-          raise(TypeError, 'Configuration keys should respond to #to_s()')
-        end
 
         unless Aspell.config_remove(@config, key.to_s)
           raise(
