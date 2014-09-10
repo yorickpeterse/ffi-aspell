@@ -104,4 +104,83 @@ describe 'FFI::Aspell::Speller' do
     speller.correct?('github').should == true
     speller.correct?('nodoc').should  == true
   end
+
+  it 'Supports language and options in .open' do
+    value = FFI::Aspell::Speller.open('nl', :personal => 'foo') do |speller|
+      speller.should.not == nil
+      speller.get(:personal).should == 'foo'
+      speller.get('lang').should == 'nl'
+      42
+    end
+
+    value.should == 42
+  end
+
+  it 'Reports its closed status' do
+    speller = FFI::Aspell::Speller.open
+    speller.closed?.should == false
+    speller.close
+    speller.closed?.should == true
+
+    outer_speller = FFI::Aspell::Speller.open do |speller|
+      speller.closed?.should == false
+      speller
+    end
+    outer_speller.closed?.should == true
+  end
+
+  it 'Closes when exception occurs in .open block' do
+    outer_speller = nil
+
+    should.raise(StandardError) do
+      FFI::Aspell::Speller.open do |speller|
+        outer_speller = speller
+        raise StandardError, 'Test error.'
+        speller.correct?('cookie').should == true # Never reached.
+      end
+    end
+
+    outer_speller.closed?.should == true
+  end
+
+  it 'Raise when speller is closed' do
+    speller = FFI::Aspell::Speller.new
+    speller.close
+
+    should.raise(RuntimeError) do
+      speller.close
+    end
+
+    should.raise(RuntimeError) do
+      speller.correct?('cookie')
+    end
+
+    should.raise(RuntimeError) do
+      speller.suggestions('cookei')
+    end
+
+    should.raise(RuntimeError) do
+      speller.suggestion_mode = 'bad-spellers'
+    end
+
+    should.raise(RuntimeError) do
+      mode = speller.suggestion_mode
+    end
+
+    should.raise(RuntimeError) do
+      speller.set('personal', 'foo')
+    end
+
+    should.raise(RuntimeError) do
+      speller.get('lang')
+    end
+
+    should.raise(RuntimeError) do
+      speller.get_default('lang')
+    end
+
+    should.raise(RuntimeError) do
+      speller.reset('lang')
+    end
+  end
 end
