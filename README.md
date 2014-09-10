@@ -37,7 +37,7 @@ spelling errors and the like:
     else
       puts 'The word "cookie" is incorrect'
     end
-    
+
     speller.close
 
 You can use `Speller.open` to avoid having to call `#close` explicitly:
