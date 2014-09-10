@@ -10,10 +10,11 @@ the main author as of April 2012.
 * Aspell
 * Aspell language packs for your used language(s)
 
-For running the tests the following is required:
+For running the tests the following language packs are required:
 
-* Dutch language pack
-* Greek language pack
+* Dutch: `aspell-nl`
+* English: `aspell-en`
+* Greek: `aspell-el`
 
 Aspell can be installed as following:
 
