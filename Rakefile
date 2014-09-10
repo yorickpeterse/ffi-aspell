@@ -1,5 +1,8 @@
 require 'bundler/gem_tasks'
+require 'digest/sha2'
 require 'rake/clean'
+
+GEMSPEC = Gem::Specification.load('ffi-aspell.gemspec')
 
 CLEAN.include('coverage', 'yardoc')
 
