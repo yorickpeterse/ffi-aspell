@@ -14,7 +14,7 @@ module FFI
   #
   module Aspell
     extend   FFI::Library
-    ffi_lib 'aspell'
+    ffi_lib ['aspell', 'libaspell.so.15']
 
     ##
     # Creates a pointer for a configuration struct.
