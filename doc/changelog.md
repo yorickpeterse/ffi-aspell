@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 - 201411-05
+
+An alternative library name for Aspell was added so that this Gem now works on
+Ubuntu systems.
+
 ## 1.0.0 - 2014-09-10
 
 The first stable release of the Gem (at least according to semver). This release
