@@ -255,6 +255,20 @@ describe FFI::Aspell::Speller do
     end
   end
 
+  context '#invalid_dictionary' do
+    before do
+      @speller = described_class.new('de')
+    end
+
+    example 'raise RuntimeError if the used dictionary for correction does not exist' do
+      -> { @speller.correct?('Wort') }.should raise_error
+    end
+
+    example 'raise RuntimeError if the used dictionary for suggestion does not exist' do
+      -> { @speller.suggestions('Wort') }.should raise_error
+    end
+  end
+
   context '#reset' do
     before do
       @speller = described_class.new

@@ -194,6 +194,16 @@ module FFI
       end
 
       ##
+      # Checks if a dictionary is available or not
+      #
+      # @return [TrueClass|FalseClass]
+      #
+      def dictionary_available?(dictionary)
+        dicts = available_dictionaries
+        dicts.any?{|e| dictionary.eql?(e) }
+      end
+
+      ##
       # Checks if the given word is correct or not.
       #
       # @param  [String] word The word to check.
@@ -202,6 +212,7 @@ module FFI
       #
       def correct?(word)
         check_closed
+        check_dictionary
 
         unless word.is_a?(String)
           raise(TypeError, "Expected String but got #{word.class} instead")
@@ -226,6 +237,7 @@ module FFI
       #
       def suggestions(word)
         check_closed
+        check_dictionary
 
         unless word.is_a?(String)
           raise(TypeError, "Expected String but got #{word.class} instead")
@@ -399,6 +411,17 @@ module FFI
         end
       end
 
+      ## 
+      # Raises error if used dictionary is not installed.
+      # @rause [RuntimeError] Raised if dictionary does not exist.
+      # @return [nil]
+      # 
+      def check_dictionary
+        if not dictionary_available?(get('lang'))
+          raise(RuntimeError, 'The used dictionary is not available')
+        end
+      end
+
       ##
       # Updates the internal speller object to use the current config.
       #
@@ -414,6 +437,27 @@ module FFI
           self.class.finalizer(@config, @speller)
         )
       end
+
+      ## 
+      # Get all availbale aspell dictionary codes
+      #
+      # @return [Array]
+      #
+      def available_dictionaries
+        config = Aspell.config_new
+        list = Aspell.dict_info_list(config)
+        elements = Aspell.dict_info_list_elements(list)
+
+        dicts = []
+        while element = Aspell.dict_info_enumeration_next(elements)
+          break if element == FFI::Pointer::NULL          
+          dictInfo = Aspell::DictInfo.new(element)
+          dicts.push(handle_output(dictInfo[:code]))
+        end
+        Aspell.delete_dict_info_enumeration(elements)
+        dicts
+      end
+
     end # Speller
   end # Aspell
 end # FFI

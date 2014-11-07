@@ -17,6 +17,16 @@ module FFI
     ffi_lib ['aspell', 'libaspell.so.15']
 
     ##
+    # Dictionary Information Struced
+    # 
+    # @context AspellDictInfo C class
+    #   :code - dictionary shortcut
+    #
+    class DictInfo < FFI::Struct
+      layout :code, :string
+    end
+
+    ##
     # Creates a pointer for a configuration struct.
     #
     # @method config_new
@@ -247,5 +257,60 @@ module FFI
       'aspell_string_enumeration_next',
       [:pointer],
       :string
+
+          ##
+    # Get a list of all installed aspell dictionaries
+    # 
+    # @method dict_info_list(config)
+    # @scope  class
+    # @param  [FFI::Pointer] config The pointer to use
+    # @return [FFI::Pointer] the list
+    #
+    attach_function 'dict_info_list',
+      'get_aspell_dict_info_list',
+      [:pointer],
+      :pointer
+
+    ##
+    # Get all elements from the dictionary list
+    # 
+    # @method dict_info_list_elements(list)
+    # @scope  class
+    # @param  [FFI::Pointer] list The list of dictionaries returned
+    #  by {FFI::Aspell.dict_info_list}.
+    # @return [FFI::Pointer] dictionary enumeration of list
+    #
+    attach_function 'dict_info_list_elements',
+      'aspell_dict_info_list_elements',
+      [:pointer],
+      :pointer
+
+    ##
+    # deletes the array of dictionary enumeration
+    # 
+    # @method delete_dict_info_enumeration(enumeration)
+    # @scope  class
+    # @param  [FFI::Pointer] enumeration of dictionarys returned
+    #  by {FFI::Aspell.dict_info_list_elements}.
+    #
+    attach_function 'delete_dict_info_enumeration',
+      'delete_aspell_dict_info_enumeration',
+      [:pointer],
+      :void
+
+    ##
+    # Retrieves the next element in the list of dictionaries.
+    # 
+    # @method dict_info_enumeration_next(elements)
+    # @scope  class
+    # @param  [FFI::Pointer] elements Pointer to a dictionary enumeration as returned
+    #  by {FFI::Aspell.dict_info_list_elements}.
+    # @return [DictInfo|NilClass] a struct of dictionary information
+    #
+    attach_function 'dict_info_enumeration_next',
+      'aspell_dict_info_enumeration_next',
+      [:pointer],
+      DictInfo
+
   end # Aspell
 end # FFI
