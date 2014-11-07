@@ -258,7 +258,7 @@ module FFI
       [:pointer],
       :string
 
-          ##
+    ##
     # Get a list of all installed aspell dictionaries
     # 
     # @method dict_info_list(config)
