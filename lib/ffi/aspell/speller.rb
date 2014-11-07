@@ -212,7 +212,6 @@ module FFI
       #
       def correct?(word)
         check_closed
-        check_dictionary
 
         unless word.is_a?(String)
           raise(TypeError, "Expected String but got #{word.class} instead")
@@ -237,7 +236,6 @@ module FFI
       #
       def suggestions(word)
         check_closed
-        check_dictionary
 
         unless word.is_a?(String)
           raise(TypeError, "Expected String but got #{word.class} instead")
@@ -417,7 +415,7 @@ module FFI
       # @return [nil]
       # 
       def check_dictionary
-        if not dictionary_available?(get('lang'))
+        if ! dictionary_available?(get('lang'))
           raise(RuntimeError, 'The used dictionary is not available')
         end
       end
@@ -436,6 +434,7 @@ module FFI
           self,
           self.class.finalizer(@config, @speller)
         )
+        check_dictionary
       end
 
       ## 
