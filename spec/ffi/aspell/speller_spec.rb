@@ -245,7 +245,7 @@ describe FFI::Aspell::Speller do
     end
 
     example 'return a default configuration value' do
-      @speller.get_default('personal').should == '.aspell.en_GB.pws'
+      @speller.get_default('personal').should == '.aspell.en_US.pws'
     end
 
     example 'raise ConfigError for invalid configuration items' do
