@@ -245,7 +245,7 @@ describe FFI::Aspell::Speller do
     end
 
     example 'return a default configuration value' do
-      @speller.get_default('personal').should == '.aspell.en_US.pws'
+      @speller.get_default('personal').should == '.aspell.en_GB.pws'
     end
 
     example 'raise ConfigError for invalid configuration items' do
@@ -255,18 +255,14 @@ describe FFI::Aspell::Speller do
     end
   end
 
-  context '#invalid_dictionary' do
-    before do
-      @unknown_language = 'qwer'
-    end
-    
+  context '#invalid_dictionary' do  
     example 'raise RuntimeError if the used dictionary does not exist' do
-      -> { speller = described_class.new(@unknown_language) }.should raise_error
+      -> { described_class.new('qwer') }.should raise_error
     end
 
     example 'raise RuntimeError if the changed dictionary does not exist' do
       speller = described_class.new('en')
-      -> { speller = described_class.set('lang', @unknown_language) }.should raise_error
+      -> { speller.set('lang', 'qwer') }.should raise_error
     end
   end
 

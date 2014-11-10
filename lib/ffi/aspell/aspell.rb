@@ -17,10 +17,7 @@ module FFI
     ffi_lib ['aspell', 'libaspell.so.15']
 
     ##
-    # Dictionary Information Struced
-    # 
-    # @context AspellDictInfo C class
-    #   :code - dictionary shortcut
+    # Structure for storing dictionary information.
     #
     class DictInfo < FFI::Struct
       layout :code, :string
@@ -259,12 +256,13 @@ module FFI
       :string
 
     ##
-    # Get a list of all installed aspell dictionaries
+    # Gets a list of all installed aspell dictionaries.
     # 
     # @method dict_info_list(config)
     # @scope  class
-    # @param  [FFI::Pointer] config The pointer to use
-    # @return [FFI::Pointer] the list
+    # @param  [FFI::Pointer] config 
+    # @return [FFI::Pointer] list A list of dictionaries which can be used
+    # by {FFI::Aspell.dict_info_list_elements}.
     #
     attach_function 'dict_info_list',
       'get_aspell_dict_info_list',
@@ -272,13 +270,14 @@ module FFI
       :pointer
 
     ##
-    # Get all elements from the dictionary list
+    # Gets all elements from the dictionary list.
     # 
     # @method dict_info_list_elements(list)
     # @scope  class
-    # @param  [FFI::Pointer] list The list of dictionaries returned
+    # @param  [FFI::Pointer] list A list of dictionaries as returned
     #  by {FFI::Aspell.dict_info_list}.
-    # @return [FFI::Pointer] dictionary enumeration of list
+    # @return [FFI::Pointer] dictionary Returns an enumeration of 
+    #  {FFI::Aspell::DictInfo} structs.
     #
     attach_function 'dict_info_list_elements',
       'aspell_dict_info_list_elements',
@@ -286,11 +285,11 @@ module FFI
       :pointer
 
     ##
-    # deletes the array of dictionary enumeration
+    # Deletes an enumeration of dictionaries.
     # 
     # @method delete_dict_info_enumeration(enumeration)
     # @scope  class
-    # @param  [FFI::Pointer] enumeration of dictionarys returned
+    # @param  [FFI::Pointer] enumeration An enumeration of dictionaries returned
     #  by {FFI::Aspell.dict_info_list_elements}.
     #
     attach_function 'delete_dict_info_enumeration',
@@ -305,7 +304,8 @@ module FFI
     # @scope  class
     # @param  [FFI::Pointer] elements Pointer to a dictionary enumeration as returned
     #  by {FFI::Aspell.dict_info_list_elements}.
-    # @return [DictInfo|NilClass] a struct of dictionary information
+    # @return [DictInfo|NilClass] dictInfo Returns an object of {FFI::Aspell::DictInfo}
+    #  information, which contains dictionary information.
     #
     attach_function 'dict_info_enumeration_next',
       'aspell_dict_info_enumeration_next',

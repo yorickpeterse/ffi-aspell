@@ -199,8 +199,7 @@ module FFI
       # @return [TrueClass|FalseClass]
       #
       def dictionary_available?(dictionary)
-        dicts = available_dictionaries
-        dicts.any?{|e| dictionary.eql?(e) }
+        return available_dictionaries.include?(dictionary)
       end
 
       ##
@@ -411,12 +410,14 @@ module FFI
 
       ## 
       # Raises error if used dictionary is not installed.
-      # @rause [RuntimeError] Raised if dictionary does not exist.
+      #
+      # @raise [ArgumentError] Raised if dictionary does not exist.
       # @return [nil]
       # 
       def check_dictionary
-        if ! dictionary_available?(get('lang'))
-          raise(RuntimeError, 'The used dictionary is not available')
+        dictionary = get('lang')
+        if !dictionary_available?(dictionary)
+          raise(ArgumentError, 'The used dictionary \'' + dictionary + '\'is not available')
         end
       end
 
@@ -434,6 +435,7 @@ module FFI
           self,
           self.class.finalizer(@config, @speller)
         )
+
         check_dictionary
       end
 
@@ -446,15 +448,17 @@ module FFI
         config = Aspell.config_new
         list = Aspell.dict_info_list(config)
         elements = Aspell.dict_info_list_elements(list)
-
         dicts = []
+
         while element = Aspell.dict_info_enumeration_next(elements)
           break if element == FFI::Pointer::NULL          
           dictInfo = Aspell::DictInfo.new(element)
-          dicts.push(handle_output(dictInfo[:code]))
+          dicts << handle_output(dictInfo[:code])
         end
+
         Aspell.delete_dict_info_enumeration(elements)
-        dicts
+        
+        return dicts
       end
 
     end # Speller
