@@ -417,7 +417,7 @@ module FFI
       def check_dictionary
         dictionary = get('lang')
         if !dictionary_available?(dictionary)
-          raise(ArgumentError, 'The used dictionary \'' + dictionary + '\'is not available')
+          raise(ArgumentError, "The used dictionary #{dictionary.inspect} is not available")
         end
       end
 
