@@ -445,15 +445,14 @@ module FFI
       # @return [Array]
       #
       def available_dictionaries
-        config = Aspell.config_new
-        list = Aspell.dict_info_list(config)
+        list = Aspell.dict_info_list(@config)
         elements = Aspell.dict_info_list_elements(list)
         dicts = []
 
         while element = Aspell.dict_info_enumeration_next(elements)
           break if element == FFI::Pointer::NULL          
-          dictInfo = Aspell::DictInfo.new(element)
-          dicts << handle_output(dictInfo[:code])
+          dict_info = Aspell::DictInfo.new(element)
+          dicts << handle_output(dict_info[:code])
         end
 
         Aspell.delete_dict_info_enumeration(elements)
