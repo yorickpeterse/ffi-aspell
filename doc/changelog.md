@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.0.1 - 201411-05
+## 1.0.2 - 2014-11-13
+
+The Speller class now checks if a dictionary is installed upon initialization or
+when updating a speller (instead of just crashing). See
+<https://github.com/YorickPeterse/ffi-aspell/pull/20> for more information.
+
+## 1.0.1 - 2014-11-05
 
 An alternative library name for Aspell was added so that this Gem now works on
 Ubuntu systems.
