@@ -255,6 +255,17 @@ describe FFI::Aspell::Speller do
     end
   end
 
+  context '#invalid_dictionary' do  
+    example 'raise RuntimeError if the used dictionary does not exist' do
+      -> { described_class.new('qwer') }.should raise_error
+    end
+
+    example 'raise RuntimeError if the changed dictionary does not exist' do
+      speller = described_class.new('en')
+      -> { speller.set('lang', 'qwer') }.should raise_error
+    end
+  end
+
   context '#reset' do
     before do
       @speller = described_class.new

@@ -194,6 +194,15 @@ module FFI
       end
 
       ##
+      # Checks if a dictionary is available or not
+      #
+      # @return [TrueClass|FalseClass]
+      #
+      def dictionary_available?(dictionary)
+        return available_dictionaries.include?(dictionary)
+      end
+
+      ##
       # Checks if the given word is correct or not.
       #
       # @param  [String] word The word to check.
@@ -399,6 +408,19 @@ module FFI
         end
       end
 
+      ## 
+      # Raises error if used dictionary is not installed.
+      #
+      # @raise [ArgumentError] Raised if dictionary does not exist.
+      # @return [nil]
+      # 
+      def check_dictionary
+        dictionary = get('lang')
+        if !dictionary_available?(dictionary)
+          raise(ArgumentError, "The used dictionary #{dictionary.inspect} is not available")
+        end
+      end
+
       ##
       # Updates the internal speller object to use the current config.
       #
@@ -413,7 +435,31 @@ module FFI
           self,
           self.class.finalizer(@config, @speller)
         )
+
+        check_dictionary
       end
+
+      ## 
+      # Get all availbale aspell dictionary codes
+      #
+      # @return [Array]
+      #
+      def available_dictionaries
+        list = Aspell.dict_info_list(@config)
+        elements = Aspell.dict_info_list_elements(list)
+        dicts = []
+
+        while element = Aspell.dict_info_enumeration_next(elements)
+          break if element == FFI::Pointer::NULL          
+          dict_info = Aspell::DictInfo.new(element)
+          dicts << handle_output(dict_info[:code])
+        end
+
+        Aspell.delete_dict_info_enumeration(elements)
+        
+        return dicts
+      end
+
     end # Speller
   end # Aspell
 end # FFI
