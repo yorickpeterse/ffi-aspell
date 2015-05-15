@@ -29,6 +29,11 @@ describe FFI::Aspell::Speller do
 
       speller.get('lang').should == 'en'
     end
+
+    example 'initialize should accept _ and -' do
+      expect { described_class.new('en_GB') }.not_to raise_error
+      expect { described_class.new('en-GB') }.not_to raise_error
+    end
   end
 
   context '#close' do

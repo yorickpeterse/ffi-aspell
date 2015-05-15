@@ -459,6 +459,7 @@ module FFI
           dict_info = Aspell::DictInfo.new(element)
 
           dicts << handle_output(dict_info[:code])
+          dicts << handle_output(dict_info[:code]).gsub("_", "-")
         end
 
         Aspell.delete_dict_info_enumeration(elements)
