@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/yorickpeterse/ffi-aspell'
   s.description = s.summary
   s.has_rdoc    = 'yard'
+  s.license     = 'MPL-2.0'
 
   s.required_ruby_version = '>= 1.9.3'
 

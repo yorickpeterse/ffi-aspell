@@ -55,8 +55,8 @@ For more information see the YARD documentation.
 
 ## License
 
-The code in this repository is licensed under the MIT license. A copy of this
-license can be found in the file "LICENSE" in the root directory of this
-repository.
+All source code in this repository is subject to the terms of the Mozilla Public
+License, version 2.0 unless stated otherwise. A copy of this license can be
+found the file "LICENSE" or at <https://www.mozilla.org/MPL/2.0/>.
 
 [raspell]: https://github.com/evan/raspell
