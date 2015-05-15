@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0 - 2015-05-16
+
+Dictionary names using underscores (e.g. `en_GB`) are now supported, thanks to
+Tom Kadwill.
+
+The Gem is now licensed under the Mozilla Public License 2.0 instead of the MIT
+license. More information on this can be found at
+<https://github.com/YorickPeterse/oga/commit/0a7242aed44fcd7ef18327cc5b10263fd9807a35>.
+
 ## 1.0.2 - 2014-11-13
 
 The Speller class now checks if a dictionary is installed upon initialization or
