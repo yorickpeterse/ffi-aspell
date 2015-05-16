@@ -9,7 +9,8 @@ rvm:
   - 1.9
   - 2.0
   - 2.1
-  - rbx-2.2
+  - 2.2
+  - rbx-2
   - jruby
 
 notifications:
