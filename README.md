@@ -20,7 +20,7 @@ Aspell can be installed as following:
 
 * Arch Linux: `sudo pacman -S aspell`
 * Ubuntu: `sudo apt-get install aspell libaspell-dev`
-* OS X: `brew install aspell --lang=en`
+* OS X: `brew install aspell --with-lang-en --with-lang-el --with-lang-nl`
 
 The gem will attempt to look for the `libaspell` C library to bind to from your loadpath, for most people this will be automatic.
 
