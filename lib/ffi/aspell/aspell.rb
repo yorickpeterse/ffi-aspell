@@ -1,3 +1,6 @@
+require 'open3'
+require 'rbconfig'
+
 module FFI
   ##
   # FFI::Aspell is an FFI binding for the Aspell spell checking library. Basic
@@ -13,8 +16,21 @@ module FFI
   # For more information see {FFI::Aspell::Speller}.
   #
   module Aspell
-    extend   FFI::Library
-    ffi_lib ['aspell', 'libaspell.so.15']
+    extend FFI::Library
+
+    begin
+      stdout, stderr, status = ::Open3.capture3("brew", "--prefix")
+      homebrew_path  = if status.success?
+                        "#{stdout.chomp}/lib"
+                      else
+                        '/usr/local/homebrew/lib'
+                      end
+    rescue
+      # Homebrew doesn't exist
+    end
+
+    ffi_lib ['aspell', 'libaspell.so.15'] if ::RbConfig::CONFIG['host_os'] =~ /linux/
+    ffi_lib ["#{homebrew_path}/libaspell.dylib"] if ::RbConfig::CONFIG['host_os'] =~ /darwin/
 
     ##
     # Structure for storing dictionary information.
