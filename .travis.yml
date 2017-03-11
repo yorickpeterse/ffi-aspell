@@ -1,17 +1,36 @@
 ---
+# https://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
+sudo: false
+language: ruby
+dist: trusty
+
 script: bundle exec rake
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq aspell libaspell-dev aspell-en aspell-el aspell-nl
+  # Fix for https://github.com/travis-ci/travis-ci/issues/5239
+  - gem install bundler
+
+addons:
+  apt:
+    # Install aspell dependancy packages
+    packages:
+      - aspell
+      - libaspell-dev
+      - aspell-en
+      - aspell-nl
+      - aspell-el
 
 rvm:
-  - 1.9
-  - 2.0
-  - 2.1
-  - 2.2
-  - rbx-2
-  - jruby
+  - '2.1'
+  - '2.2'
+  - '2.3'
+  - '2.4'
+  - 'rbx'
+  - 'jruby'
+
+matrix:
+  allow_failures:
+      - rvm: 'rbx'
 
 notifications:
   email:
