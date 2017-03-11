@@ -277,6 +277,16 @@ describe FFI::Aspell::Speller do
       @speller = described_class.new
     end
 
+    it 'resets keys back to their default value' do
+      @speller.set('lang', 'nl')
+
+      expect(@speller.get('lang')).to eq('nl')
+
+      @speller.reset('lang')
+
+      expect(@speller.get('lang')).to eq('en_US')
+    end
+
     it 'raises RuntimeError if the speller is closed' do
       @speller.close
 
