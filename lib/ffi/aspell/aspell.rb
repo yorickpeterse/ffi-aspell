@@ -1,3 +1,5 @@
+require 'rbconfig'
+
 module FFI
   ##
   # FFI::Aspell is an FFI binding for the Aspell spell checking library. Basic
@@ -13,8 +15,23 @@ module FFI
   # For more information see {FFI::Aspell::Speller}.
   #
   module Aspell
-    extend   FFI::Library
-    ffi_lib ['aspell', 'libaspell.so.15']
+    extend FFI::Library
+
+    # Allow custom pathing to library path
+    if !!ENV['ASPELL_LIB_PATH']
+      ffi_lib ENV['ASPELL_LIB_PATH']
+    else
+      case ::RbConfig::CONFIG['host_os']
+      when /linux/
+        ffi_lib ['aspell', 'libaspell.so.15']
+      when /darwin/
+        if File.exist?('/opt/boxen/homebrew/lib/libaspell.dylib')
+          ffi_lib ['/opt/boxen/homebrew/lib/', 'libaspell.dylib']
+        elsif File.exist?('/usr/local/lib/libaspell.dylib')
+          ffi_lib ['/usr/local/homebrew/lib/', 'libaspell.dylib']
+        end
+      end
+    end
 
     ##
     # Structure for storing dictionary information.
@@ -257,10 +274,10 @@ module FFI
 
     ##
     # Gets a list of all installed aspell dictionaries.
-    # 
+    #
     # @method dict_info_list(config)
     # @scope  class
-    # @param  [FFI::Pointer] config 
+    # @param  [FFI::Pointer] config
     # @return [FFI::Pointer] list A list of dictionaries which can be used
     # by {FFI::Aspell.dict_info_list_elements}.
     #
@@ -271,12 +288,12 @@ module FFI
 
     ##
     # Gets all elements from the dictionary list.
-    # 
+    #
     # @method dict_info_list_elements(list)
     # @scope  class
     # @param  [FFI::Pointer] list A list of dictionaries as returned
     #  by {FFI::Aspell.dict_info_list}.
-    # @return [FFI::Pointer] dictionary Returns an enumeration of 
+    # @return [FFI::Pointer] dictionary Returns an enumeration of
     #  {FFI::Aspell::DictInfo} structs.
     #
     attach_function 'dict_info_list_elements',
@@ -286,7 +303,7 @@ module FFI
 
     ##
     # Deletes an enumeration of dictionaries.
-    # 
+    #
     # @method delete_dict_info_enumeration(enumeration)
     # @scope  class
     # @param  [FFI::Pointer] enumeration An enumeration of dictionaries returned
@@ -299,7 +316,7 @@ module FFI
 
     ##
     # Retrieves the next element in the list of dictionaries.
-    # 
+    #
     # @method dict_info_enumeration_next(elements)
     # @scope  class
     # @param  [FFI::Pointer] elements Pointer to a dictionary enumeration as returned

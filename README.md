@@ -22,6 +22,12 @@ Aspell can be installed as following:
 * Ubuntu: `sudo apt-get install aspell libaspell-dev`
 * OS X: `brew install aspell --lang=en`
 
+The gem will attempt to look for the `libaspell` C library to bind to from your loadpath, for most people this will be automatic.
+
+However, depending on your platform and package manager, you may want to specify a library path using the `ASPELL_LIB_PATH` environment variable:
+
+* `ASPELL_LIB_PATH='/opt/custom_homebrew/homebrew/lib/libaspell.dylib' bundle exec rake`
+
 ## Usage
 
 Install the gem:
