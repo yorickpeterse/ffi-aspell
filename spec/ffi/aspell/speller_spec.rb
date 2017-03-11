@@ -7,19 +7,19 @@ describe FFI::Aspell::Speller do
     it 'returns a Speller object when used without a block' do
       speller = described_class.open
 
-      speller.is_a?(described_class).should == true
+      expect(speller.is_a?(described_class)).to eq(true)
     end
 
     it 'yields a Speller object when a block is given' do
       described_class.open do |sp|
-        sp.is_a?(described_class).should == true
+        expect(sp.is_a?(described_class)).to eq(true)
       end
     end
 
     it 'closes a speller automatically when using a block' do
       speller = described_class.open { |_| }
 
-      speller.closed?.should == true
+      expect(speller.closed?).to eq(true)
     end
   end
 
@@ -27,12 +27,12 @@ describe FFI::Aspell::Speller do
     it 'sets the language of the speller' do
       speller = described_class.new('en')
 
-      speller.get('lang').should == 'en'
+      expect(speller.get('lang')).to eq('en')
     end
 
     it 'accepts dashes and underscores in the language name' do
-      -> { described_class.new('en_GB') }.should_not raise_error
-      -> { described_class.new('en-GB') }.should_not raise_error
+      expect { described_class.new('en_GB') }.not_to raise_error
+      expect { described_class.new('en-GB') }.not_to raise_error
     end
   end
 
@@ -42,7 +42,7 @@ describe FFI::Aspell::Speller do
 
       speller.close
 
-      speller.closed?.should == true
+      expect(speller.closed?).to eq(true)
     end
 
     it 'raises RuntimeError if a speller is already closed' do
@@ -50,7 +50,7 @@ describe FFI::Aspell::Speller do
 
       speller.close
 
-      -> { speller.close }.should raise_error(RuntimeError)
+      expect { speller.close }.to raise_error(RuntimeError)
     end
   end
 
@@ -58,7 +58,7 @@ describe FFI::Aspell::Speller do
     it 'returns false when a speller is not closed' do
       speller = described_class.new
 
-      speller.closed?.should == false
+      expect(speller.closed?).to eq(false)
     end
 
     it 'returns true when a speller is closed' do
@@ -66,7 +66,7 @@ describe FFI::Aspell::Speller do
 
       speller.close
 
-      speller.closed?.should == true
+      expect(speller.closed?).to eq(true)
     end
   end
 
@@ -74,7 +74,7 @@ describe FFI::Aspell::Speller do
     it 'raises when the input is a non String object' do
       speller = described_class.new
 
-      -> { speller.correct?(10) }.should raise_error(TypeError)
+      expect { speller.correct?(10) }.to raise_error(TypeError)
     end
 
     it 'raises RuntimeError when the speller is closed' do
@@ -82,7 +82,7 @@ describe FFI::Aspell::Speller do
 
       speller.close
 
-      -> { speller.correct?('foo') }.should raise_error(RuntimeError)
+      expect { speller.correct?('foo') }.to raise_error(RuntimeError)
     end
 
     context 'using an English speller' do
@@ -91,17 +91,17 @@ describe FFI::Aspell::Speller do
       end
 
       it 'returns true if a word is spelled correctly' do
-        @speller.correct?('cookie').should == true
+        expect(@speller.correct?('cookie')).to eq(true)
       end
 
       it 'returns false if a word is spelled incorrectly' do
-        @speller.correct?('cookei').should == false
+        expect(@speller.correct?('cookei')).to eq(false)
       end
 
       it 'allows usage of a custom word lost' do
         @speller.set(:personal, File.join(FIXTURES, 'personal.en.pws'))
 
-        @speller.correct?('github').should == true
+        expect(@speller.correct?('github')).to eq(true)
       end
     end
 
@@ -111,11 +111,11 @@ describe FFI::Aspell::Speller do
       end
 
       it 'returns true if a word is spelled correctly' do
-        @speller.correct?('huis').should == true
+        expect(@speller.correct?('huis')).to eq(true)
       end
 
       it 'returns false if a world is spelled incorrectly' do
-        @speller.correct?('werld').should == false
+        expect(@speller.correct?('werld')).to eq(false)
       end
     end
 
@@ -125,11 +125,11 @@ describe FFI::Aspell::Speller do
       end
 
       it 'returns true if a word is spelled correctly' do
-        @speller.correct?('χταπόδι').should == true
+        expect(@speller.correct?('χταπόδι')).to eq(true)
       end
 
       it 'returns false if a word is spelled incorrectly' do
-        @speller.correct?('οιρανός').should  == false
+        expect(@speller.correct?('οιρανός')).to  eq(false)
       end
     end
   end
@@ -139,16 +139,16 @@ describe FFI::Aspell::Speller do
       speller     = described_class.new('en')
       suggestions = speller.suggestions('cookei')
 
-      suggestions.include?('cookie').should == true
-      suggestions.include?('cooked').should == true
+      expect(suggestions.include?('cookie')).to eq(true)
+      expect(suggestions.include?('cooked')).to eq(true)
     end
 
     it 'returns a list of suggestions when using a Greek speller' do
       speller     = described_class.new('el')
       suggestions = speller.suggestions('χταπίδι')
 
-      suggestions.include?('χταπόδι').should == true
-      suggestions.include?('απίδι').should   == true
+      expect(suggestions.include?('χταπόδι')).to eq(true)
+      expect(suggestions.include?('απίδι')).to   eq(true)
     end
 
     it 'returns a list of suggestions using the "bad-spellers" mode' do
@@ -158,13 +158,13 @@ describe FFI::Aspell::Speller do
       speller.suggestion_mode = 'bad-spellers'
 
       # The bad-spellers mode should return more suggestions.
-      speller.suggestions('cookei').length.should > normal
+      expect(speller.suggestions('cookei').length).to be > normal
     end
 
     it 'raises TypeError when using a non String input' do
       speller = described_class.new
 
-      -> { speller.suggestions(10) }.should raise_error(TypeError)
+      expect { speller.suggestions(10) }.to raise_error(TypeError)
     end
 
     it 'raises RuntimeError if the speller is closed' do
@@ -172,7 +172,7 @@ describe FFI::Aspell::Speller do
 
       speller.close
 
-      -> { speller.suggestions('foo') }.should raise_error(RuntimeError)
+      expect { speller.suggestions('foo') }.to raise_error(RuntimeError)
     end
   end
 
@@ -184,7 +184,7 @@ describe FFI::Aspell::Speller do
     it 'sets the suggestion mode' do
       @speller.suggestion_mode = 'bad-spellers'
 
-      @speller.suggestion_mode.should == 'bad-spellers'
+      expect(@speller.suggestion_mode).to eq('bad-spellers')
     end
 
     it 'raises RuntimeError if the speller is closed' do
@@ -192,7 +192,7 @@ describe FFI::Aspell::Speller do
 
       block = -> { @speller.suggestion_mode = 'bad-spellers' }
 
-      block.should raise_error(RuntimeError)
+      expect(block).to raise_error(RuntimeError)
     end
   end
 
@@ -204,18 +204,18 @@ describe FFI::Aspell::Speller do
     it 'raises RuntimeError if the speller is closed' do
       @speller.close
 
-      -> { @speller.set('lang', 'en') }.should raise_error(RuntimeError)
+      expect { @speller.set('lang', 'en') }.to raise_error(RuntimeError)
     end
 
     it 'raises ConfigError for an invalid suggestion mode' do
-      -> { @speller.set('sug-mode', 'foobar') }.
-        should raise_error(FFI::Aspell::ConfigError)
+      expect { @speller.set('sug-mode', 'foobar') }.
+        to raise_error(FFI::Aspell::ConfigError)
     end
 
     it 'sets the language of the speller' do
       @speller.set('lang', 'nl')
 
-      @speller.get('lang').should == 'nl'
+      expect(@speller.get('lang')).to eq('nl')
     end
   end
 
@@ -225,17 +225,17 @@ describe FFI::Aspell::Speller do
     end
 
     it 'returns the language of a speller' do
-      @speller.get('lang').should == 'en'
+      expect(@speller.get('lang')).to eq('en')
     end
 
     it 'raises RuntimeError if the speller is closed' do
       @speller.close
 
-      -> { @speller.get('lang') }.should raise_error(RuntimeError)
+      expect { @speller.get('lang') }.to raise_error(RuntimeError)
     end
 
     it 'raises ConfigError for invalid configuration items' do
-      -> { @speller.get('foo') }.should raise_error(FFI::Aspell::ConfigError)
+      expect { @speller.get('foo') }.to raise_error(FFI::Aspell::ConfigError)
     end
   end
 
@@ -247,28 +247,28 @@ describe FFI::Aspell::Speller do
     it 'raises RuntimeError if the speller is closed' do
       @speller.close
 
-      -> { @speller.get_default('lang') }.should raise_error(RuntimeError)
+      expect { @speller.get_default('lang') }.to raise_error(RuntimeError)
     end
 
     it 'returns a default configuration value' do
-      @speller.get_default('personal').should == '.aspell.en_US.pws'
+      expect(@speller.get_default('personal')).to eq('.aspell.en_US.pws')
     end
 
     it 'raises ConfigError for invalid configuration items' do
       block = -> { @speller.get_default('foo') }
 
-      block.should raise_error(FFI::Aspell::ConfigError)
+      expect(block).to raise_error(FFI::Aspell::ConfigError)
     end
   end
 
   describe '#invalid_dictionary' do
     it 'raises ArgumentError if the used dictionary does not exist' do
-      -> { described_class.new('qwer') }.should raise_error(ArgumentError)
+      expect { described_class.new('qwer') }.to raise_error(ArgumentError)
     end
 
     it 'raises ArgumentError if the changed dictionary does not exist' do
       speller = described_class.new('en')
-      -> { speller.set('lang', 'qwer') }.should raise_error(ArgumentError)
+      expect { speller.set('lang', 'qwer') }.to raise_error(ArgumentError)
     end
   end
 
@@ -280,11 +280,11 @@ describe FFI::Aspell::Speller do
     it 'raises RuntimeError if the speller is closed' do
       @speller.close
 
-      -> { @speller.reset('foo') }.should raise_error(RuntimeError)
+      expect { @speller.reset('foo') }.to raise_error(RuntimeError)
     end
 
     it 'raises ConfigError when resetting an invalid option' do
-      -> { @speller.reset('foo') }.should raise_error(FFI::Aspell::ConfigError)
+      expect { @speller.reset('foo') }.to raise_error(FFI::Aspell::ConfigError)
     end
   end
 end
