@@ -20,7 +20,13 @@ Aspell can be installed as following:
 
 * Arch Linux: `sudo pacman -S aspell`
 * Ubuntu: `sudo apt-get install aspell libaspell-dev`
-* OS X: `brew install aspell --lang=en`
+* OS X: `brew install aspell --with-lang-en --with-lang-el --with-lang-nl`
+  * If you have homebrew installed to somewhere other than `/usr/local` (such as `/opt/boxen/homebrew` for Boxen users), you may have to simlink the library file like so:
+
+```
+sudo ln -s $(brew --prefix)/lib/libaspell.dylib /usr/local/lib/libaspell.dylib
+```
+
 
 ## Usage
 
